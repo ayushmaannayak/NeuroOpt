@@ -1,0 +1,168 @@
+====================================================================================================
+Worked example (slide 23)
+    mov rax, 0; imul rbx, rbx, 8; mov rcx, rcx; add rax, rbx
+====================================================================================================
+1. Decode (Capstone)
+    0  48c7c000000000         mov rax, 0                         live after: .. .. .. .. .. ..
+    1  486bdb08               imul rbx, rbx, 8                   live after: .. .. .. .. .. ..
+    2  4889c9                 mov rcx, rcx                       live after: .. .. .. .. .. ..
+    3  4801d8                 add rax, rbx                       live after: CF PF AF ZF SF OF
+2. Rewrite + guards
+3. Oracle + select  [oracle=static, τ=0]
+   accepted R2 @1: imul rbx, rbx, 8  ->  shl rbx, 3
+   accepted R3 @2: mov rcx, rcx  ->  (delete)
+   accepted R1 @0: mov rax, 0  ->  xor rax, rax
+   predicted cost 6.00 -> 2.25
+4. Emit + verify
+       4831c0                 xor rax, rax
+       48c1e303               shl rbx, 3
+       4801d8                 add rax, rbx
+   bytes 17 -> 10   hex 4831c048c1e3034801d8
+   emulator: EQUIVALENT over 256 random states
+5. Hardware timing (this CPU): 3.00 -> 1.04 cycles/iteration (x2.89)
+
+====================================================================================================
+Trap 1: imul -> shl changes flags; adc reads CF
+    imul rbx, rbx, 8; adc rax, rbx
+====================================================================================================
+1. Decode (Capstone)
+    0  486bdb08               imul rbx, rbx, 8                   live after: CF .. .. .. .. ..
+    1  4811d8                 adc rax, rbx                       live after: CF PF AF ZF SF OF
+2. Rewrite + guards
+   refused  R2 refused @0: imul rbx, rbx, 8  (CF read by adc @1 before being overwritten)
+3. Oracle + select  [oracle=static, τ=0]
+   no legal rewrite: keeping the original
+   predicted cost 4.00 -> 4.00
+4. Emit + verify
+       486bdb08               imul rbx, rbx, 8
+       4811d8                 adc rax, rbx
+   bytes 7 -> 7   hex 486bdb084811d8
+5. Hardware timing (this CPU): 3.00 -> 3.00 cycles/iteration (x1.00)
+
+====================================================================================================
+Trap 2: mov -> xor clobbers ZF that sete needs
+    cmp rdi, rsi; mov eax, 0; sete al
+====================================================================================================
+1. Decode (Capstone)
+    0  4839f7                 cmp rdi, rsi                       live after: CF PF AF ZF SF OF
+    1  b800000000             mov eax, 0                         live after: CF PF AF ZF SF OF
+    2  0f94c0                 sete al                            live after: CF PF AF ZF SF OF
+2. Rewrite + guards
+   refused  R1 refused @1: mov eax, 0  (ZF read by sete @2 before being overwritten)
+3. Oracle + select  [oracle=static, τ=0]
+   no legal rewrite: keeping the original
+   predicted cost 3.00 -> 3.00
+4. Emit + verify
+       4839f7                 cmp rdi, rsi
+       b800000000             mov eax, 0
+       0f94c0                 sete al
+   bytes 11 -> 11   hex 4839f7b8000000000f94c0
+5. Hardware timing (this CPU): 0.77 -> 0.77 cycles/iteration (x1.00)
+
+====================================================================================================
+Trap 3: mov eax, eax is a zero-extension, not a no-op
+    mov eax, eax; mov rcx, rcx; add rax, rcx
+====================================================================================================
+1. Decode (Capstone)
+    0  89c0                   mov eax, eax                       live after: .. .. .. .. .. ..
+    1  4889c9                 mov rcx, rcx                       live after: .. .. .. .. .. ..
+    2  4801c8                 add rax, rcx                       live after: CF PF AF ZF SF OF
+2. Rewrite + guards
+   refused  R3 refused @0: mov eax, eax  (32-bit write zero-extends into the upper half, not a no-op)
+3. Oracle + select  [oracle=static, τ=0]
+   accepted R3 @1: mov rcx, rcx  ->  (delete)
+   predicted cost 3.00 -> 2.00
+4. Emit + verify
+       89c0                   mov eax, eax
+       4801c8                 add rax, rcx
+   bytes 8 -> 5   hex 89c04801c8
+   emulator: EQUIVALENT over 256 random states
+5. Hardware timing (this CPU): 2.00 -> 2.00 cycles/iteration (x1.00)
+
+====================================================================================================
+Real BHive-style block, mixed
+    xor edx, edx; mov ecx, 0; imul r8, r8, 16; mov r9, r9; add r8, rcx; cmp r8, rdx
+====================================================================================================
+1. Decode (Capstone)
+    0  31d2                   xor edx, edx                       live after: .. .. .. .. .. ..
+    1  b900000000             mov ecx, 0                         live after: .. .. .. .. .. ..
+    2  4d6bc010               imul r8, r8, 0x10                  live after: .. .. .. .. .. ..
+    3  4d89c9                 mov r9, r9                         live after: .. .. .. .. .. ..
+    4  4901c8                 add r8, rcx                        live after: .. .. .. .. .. ..
+    5  4939d0                 cmp r8, rdx                        live after: CF PF AF ZF SF OF
+2. Rewrite + guards
+3. Oracle + select  [oracle=static, τ=0]
+   accepted R2 @2: imul r8, r8, 0x10  ->  shl r8, 4
+   accepted R3 @3: mov r9, r9  ->  (delete)
+   accepted R1 @1: mov ecx, 0  ->  xor ecx, ecx
+   predicted cost 7.25 -> 3.50
+4. Emit + verify
+       31d2                   xor edx, edx
+       31c9                   xor ecx, ecx
+       49c1e004               shl r8, 4
+       4901c8                 add r8, rcx
+       4939d0                 cmp r8, rdx
+   bytes 20 -> 14   hex 31d231c949c1e0044901c84939d0
+   emulator: EQUIVALENT over 256 random states
+5. Hardware timing (this CPU): 4.02 -> 2.36 cycles/iteration (x1.70)
+
+====================================================================================================
+Same worked example, swapping only the oracle
+====================================================================================================
+--- oracle = static
+1. Decode (Capstone)
+    0  48c7c000000000         mov rax, 0                         live after: .. .. .. .. .. ..
+    1  486bdb08               imul rbx, rbx, 8                   live after: .. .. .. .. .. ..
+    2  4889c9                 mov rcx, rcx                       live after: .. .. .. .. .. ..
+    3  4801d8                 add rax, rbx                       live after: CF PF AF ZF SF OF
+2. Rewrite + guards
+3. Oracle + select  [oracle=static, τ=0]
+   accepted R2 @1: imul rbx, rbx, 8  ->  shl rbx, 3
+   accepted R3 @2: mov rcx, rcx  ->  (delete)
+   accepted R1 @0: mov rax, 0  ->  xor rax, rax
+   predicted cost 6.00 -> 2.25
+4. Emit + verify
+       4831c0                 xor rax, rax
+       48c1e303               shl rbx, 3
+       4801d8                 add rax, rbx
+   bytes 17 -> 10   hex 4831c048c1e3034801d8
+   emulator: EQUIVALENT over 256 random states
+5. Hardware timing (this CPU): 3.00 -> 1.04 cycles/iteration (x2.90)
+
+--- oracle = mca
+1. Decode (Capstone)
+    0  48c7c000000000         mov rax, 0                         live after: .. .. .. .. .. ..
+    1  486bdb08               imul rbx, rbx, 8                   live after: .. .. .. .. .. ..
+    2  4889c9                 mov rcx, rcx                       live after: .. .. .. .. .. ..
+    3  4801d8                 add rax, rbx                       live after: CF PF AF ZF SF OF
+2. Rewrite + guards
+3. Oracle + select  [oracle=llvm-mca(cascadelake), τ=0]
+   accepted R2 @1: imul rbx, rbx, 8  ->  shl rbx, 3
+   predicted cost 3.09 -> 1.04
+4. Emit + verify
+       48c7c000000000         mov rax, 0
+       48c1e303               shl rbx, 3
+       4889c9                 mov rcx, rcx
+       4801d8                 add rax, rbx
+   bytes 17 -> 17   hex 48c7c00000000048c1e3034889c94801d8
+   emulator: EQUIVALENT over 256 random states
+5. Hardware timing (this CPU): 3.00 -> 1.06 cycles/iteration (x2.82)
+
+--- oracle = lstm
+1. Decode (Capstone)
+    0  48c7c000000000         mov rax, 0                         live after: .. .. .. .. .. ..
+    1  486bdb08               imul rbx, rbx, 8                   live after: .. .. .. .. .. ..
+    2  4889c9                 mov rcx, rcx                       live after: .. .. .. .. .. ..
+    3  4801d8                 add rax, rbx                       live after: CF PF AF ZF SF OF
+2. Rewrite + guards
+3. Oracle + select  [oracle=lstm, τ=0]
+   accepted R3 @2: mov rcx, rcx  ->  (delete)
+   predicted cost 1.07 -> 0.80
+4. Emit + verify
+       48c7c000000000         mov rax, 0
+       486bdb08               imul rbx, rbx, 8
+       4801d8                 add rax, rbx
+   bytes 17 -> 14   hex 48c7c000000000486bdb084801d8
+   emulator: EQUIVALENT over 256 random states
+5. Hardware timing (this CPU): 3.00 -> 3.00 cycles/iteration (x1.00)
+

@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+neuroopt/_hwtime.so
+data/raw/*.csv
+data/raw/sources/
+data/processed/bhive_*.jsonl.gz
+.pytest_cache/
+dist/

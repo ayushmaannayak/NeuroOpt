@@ -1,0 +1,447 @@
+{
+  "n_blocks": 1000,
+  "eps": 0.02,
+  "verification": {
+    "equivalent": 9432,
+    "emulator could not run": 2
+  },
+  "pool_size": {
+    "24": 60,
+    "6": 179,
+    "3": 99,
+    "2": 437,
+    "64": 61,
+    "20": 26,
+    "4": 31,
+    "12": 22,
+    "10": 12,
+    "40": 3,
+    "8": 20,
+    "16": 2,
+    "35": 2,
+    "60": 11,
+    "36": 2,
+    "15": 3,
+    "30": 6,
+    "17": 2,
+    "7": 3,
+    "14": 4,
+    "33": 1,
+    "48": 1,
+    "5": 6,
+    "56": 2,
+    "42": 3,
+    "9": 2
+  },
+  "noise": {
+    "median_cv": 0.020229573090154475,
+    "p90_cv": 0.10163983300698125
+  },
+  "single_rule_measured_speedup": {
+    "X1": {
+      "n": 74,
+      "geomean": 1.0014019456066614,
+      "improved": 0.1891891891891892,
+      "regressed": 0.20270270270270271
+    },
+    "X2": {
+      "n": 162,
+      "geomean": 0.9989697546857224,
+      "improved": 0.17901234567901234,
+      "regressed": 0.2345679012345679
+    },
+    "X3": {
+      "n": 5,
+      "geomean": 0.9688798287630624,
+      "improved": 0.2,
+      "regressed": 0.4
+    },
+    "X4": {
+      "n": 15,
+      "geomean": 0.7309522902574626,
+      "improved": 0.0,
+      "regressed": 0.9333333333333333
+    },
+    "X6": {
+      "n": 1631,
+      "geomean": 1.0041739192127113,
+      "improved": 0.2458614347026364,
+      "regressed": 0.2299202942979767
+    }
+  },
+  "single_rule_predicted_vs_measured": {
+    "X1": {
+      "measured": {
+        "geomean": 1.0014019456066614,
+        "says_faster": 0.1891891891891892
+      },
+      "static": {
+        "geomean": 1.0,
+        "says_faster": 0.0
+      },
+      "lstm": {
+        "geomean": 0.9975378723084858,
+        "says_faster": 0.3108108108108108
+      },
+      "llvm-mca(cascadelake)": {
+        "geomean": 1.0,
+        "says_faster": 0.0
+      }
+    },
+    "X2": {
+      "measured": {
+        "geomean": 0.9989697546857224,
+        "says_faster": 0.17901234567901234
+      },
+      "static": {
+        "geomean": 1.0,
+        "says_faster": 0.0
+      },
+      "lstm": {
+        "geomean": 1.1283696419876494,
+        "says_faster": 0.5185185185185185
+      },
+      "llvm-mca(cascadelake)": {
+        "geomean": 0.9939361117280648,
+        "says_faster": 0.0
+      }
+    },
+    "X3": {
+      "measured": {
+        "geomean": 0.9688798287630624,
+        "says_faster": 0.2
+      },
+      "static": {
+        "geomean": 1.0,
+        "says_faster": 0.0
+      },
+      "lstm": {
+        "geomean": 0.9764270851603701,
+        "says_faster": 0.6
+      },
+      "llvm-mca(cascadelake)": {
+        "geomean": 0.9692392567499004,
+        "says_faster": 0.0
+      }
+    },
+    "X4": {
+      "measured": {
+        "geomean": 0.7309522902574626,
+        "says_faster": 0.0
+      },
+      "static": {
+        "geomean": 0.647477673513627,
+        "says_faster": 0.0
+      },
+      "lstm": {
+        "geomean": 0.7425020988488854,
+        "says_faster": 0.2
+      },
+      "llvm-mca(cascadelake)": {
+        "geomean": 0.7626510790803759,
+        "says_faster": 0.0
+      }
+    },
+    "X6": {
+      "measured": {
+        "geomean": 1.0041739192127113,
+        "says_faster": 0.2458614347026364
+      },
+      "static": {
+        "geomean": 1.0,
+        "says_faster": 0.0
+      },
+      "lstm": {
+        "geomean": 1.00552582656889,
+        "says_faster": 0.22501532801961988
+      },
+      "llvm-mca(cascadelake)": {
+        "geomean": 0.9996294486517808,
+        "says_faster": 0.0
+      }
+    }
+  },
+  "blocks_where_some_candidate_is_measurably_faster": 0.429,
+  "policies": {
+    "keep original": {
+      "geomean_speedup": 1.0,
+      "geomean_ci95": [
+        1.0,
+        1.0
+      ],
+      "win_rate": 0.0,
+      "regression_rate": 0.0,
+      "mean_regret": 0.05482023071699892,
+      "zero_regret": 0.57,
+      "rewrite_rate": 0.0
+    },
+    "apply every legal rule": {
+      "geomean_speedup": 1.0028109916033703,
+      "geomean_ci95": [
+        0.996863700524676,
+        1.0090633268979208
+      ],
+      "win_rate": 0.26,
+      "regression_rate": 0.256,
+      "mean_regret": 0.051570076531057704,
+      "zero_regret": 0.584,
+      "rewrite_rate": 1.0
+    },
+    "random legal candidate": {
+      "geomean_speedup": 1.0018481681981142,
+      "geomean_ci95": [
+        0.9967658134424671,
+        1.0071220836889965
+      ],
+      "win_rate": 0.176,
+      "regression_rate": 0.173,
+      "mean_regret": 0.05276015249840075,
+      "zero_regret": 0.591,
+      "rewrite_rate": 0.691
+    },
+    "static τ=0": {
+      "geomean_speedup": 1.000148651976298,
+      "geomean_ci95": [
+        1.0,
+        1.000374248990219
+      ],
+      "win_rate": 0.002,
+      "regression_rate": 0.0,
+      "mean_regret": 0.054666029860319106,
+      "zero_regret": 0.572,
+      "rewrite_rate": 0.003
+    },
+    "static τ=0.01": {
+      "geomean_speedup": 1.000148651976298,
+      "geomean_ci95": [
+        1.0,
+        1.000374248990219
+      ],
+      "win_rate": 0.002,
+      "regression_rate": 0.0,
+      "mean_regret": 0.054666029860319106,
+      "zero_regret": 0.572,
+      "rewrite_rate": 0.003
+    },
+    "static τ=0.02": {
+      "geomean_speedup": 1.000148651976298,
+      "geomean_ci95": [
+        1.0,
+        1.000374248990219
+      ],
+      "win_rate": 0.002,
+      "regression_rate": 0.0,
+      "mean_regret": 0.054666029860319106,
+      "zero_regret": 0.572,
+      "rewrite_rate": 0.003
+    },
+    "static τ=0.05": {
+      "geomean_speedup": 1.000148651976298,
+      "geomean_ci95": [
+        1.0,
+        1.000374248990219
+      ],
+      "win_rate": 0.002,
+      "regression_rate": 0.0,
+      "mean_regret": 0.054666029860319106,
+      "zero_regret": 0.572,
+      "rewrite_rate": 0.003
+    },
+    "static τ=0.1": {
+      "geomean_speedup": 1.000148651976298,
+      "geomean_ci95": [
+        1.0,
+        1.000374248990219
+      ],
+      "win_rate": 0.002,
+      "regression_rate": 0.0,
+      "mean_regret": 0.054666029860319106,
+      "zero_regret": 0.572,
+      "rewrite_rate": 0.003
+    },
+    "lstm τ=0": {
+      "geomean_speedup": 1.003305418847983,
+      "geomean_ci95": [
+        0.9978176569698733,
+        1.0086739566073109
+      ],
+      "win_rate": 0.191,
+      "regression_rate": 0.168,
+      "mean_regret": 0.0512306252120376,
+      "zero_regret": 0.598,
+      "rewrite_rate": 0.7
+    },
+    "lstm τ=0.01": {
+      "geomean_speedup": 1.0027912510890145,
+      "geomean_ci95": [
+        0.9977064252452553,
+        1.00802139602634
+      ],
+      "win_rate": 0.163,
+      "regression_rate": 0.148,
+      "mean_regret": 0.051795144497366524,
+      "zero_regret": 0.592,
+      "rewrite_rate": 0.598
+    },
+    "lstm τ=0.02": {
+      "geomean_speedup": 1.0023294352989365,
+      "geomean_ci95": [
+        0.9975715781035568,
+        1.0069501353413581
+      ],
+      "win_rate": 0.14,
+      "regression_rate": 0.117,
+      "mean_regret": 0.05248587724230913,
+      "zero_regret": 0.593,
+      "rewrite_rate": 0.492
+    },
+    "lstm τ=0.05": {
+      "geomean_speedup": 0.9992736919094051,
+      "geomean_ci95": [
+        0.9956385121919991,
+        1.0030071265455294
+      ],
+      "win_rate": 0.078,
+      "regression_rate": 0.073,
+      "mean_regret": 0.05594871998533506,
+      "zero_regret": 0.578,
+      "rewrite_rate": 0.284
+    },
+    "lstm τ=0.1": {
+      "geomean_speedup": 0.9972690344874809,
+      "geomean_ci95": [
+        0.9944653130810769,
+        1.0001290165834693
+      ],
+      "win_rate": 0.033,
+      "regression_rate": 0.04,
+      "mean_regret": 0.058218582516138415,
+      "zero_regret": 0.564,
+      "rewrite_rate": 0.14
+    },
+    "llvm-mca(cascadelake) τ=0": {
+      "geomean_speedup": 0.9996651908982098,
+      "geomean_ci95": [
+        0.9984827014430692,
+        1.00075794158367
+      ],
+      "win_rate": 0.013,
+      "regression_rate": 0.016,
+      "mean_regret": 0.05529769172822151,
+      "zero_regret": 0.572,
+      "rewrite_rate": 0.047
+    },
+    "llvm-mca(cascadelake) τ=0.01": {
+      "geomean_speedup": 1.0001562559724564,
+      "geomean_ci95": [
+        0.9993954692829988,
+        1.0009460358949498
+      ],
+      "win_rate": 0.013,
+      "regression_rate": 0.014,
+      "mean_regret": 0.05470167629800844,
+      "zero_regret": 0.572,
+      "rewrite_rate": 0.04
+    },
+    "llvm-mca(cascadelake) τ=0.02": {
+      "geomean_speedup": 1.0000769000758167,
+      "geomean_ci95": [
+        1.0,
+        1.00023071796877
+      ],
+      "win_rate": 0.001,
+      "regression_rate": 0.0,
+      "mean_regret": 0.05474029975052949,
+      "zero_regret": 0.571,
+      "rewrite_rate": 0.001
+    },
+    "llvm-mca(cascadelake) τ=0.05": {
+      "geomean_speedup": 1.0000769000758167,
+      "geomean_ci95": [
+        1.0,
+        1.00023071796877
+      ],
+      "win_rate": 0.001,
+      "regression_rate": 0.0,
+      "mean_regret": 0.05474029975052949,
+      "zero_regret": 0.571,
+      "rewrite_rate": 0.001
+    },
+    "llvm-mca(cascadelake) τ=0.1": {
+      "geomean_speedup": 1.0000769000758167,
+      "geomean_ci95": [
+        1.0,
+        1.00023071796877
+      ],
+      "win_rate": 0.001,
+      "regression_rate": 0.0,
+      "mean_regret": 0.05474029975052949,
+      "zero_regret": 0.571,
+      "rewrite_rate": 0.001
+    },
+    "best measured (upper bound)": {
+      "geomean_speedup": 1.0504222132824965,
+      "geomean_ci95": [
+        1.0447263638238786,
+        1.0568055622898505
+      ],
+      "win_rate": 0.429,
+      "regression_rate": 0.0,
+      "mean_regret": 0.0,
+      "zero_regret": 1.0,
+      "rewrite_rate": 0.608
+    }
+  },
+  "paired_oracles_tau0": {
+    "lstm vs static": {
+      "geomean_ratio": 1.0031562976817967,
+      "ci95": [
+        0.9977070529782959,
+        1.0085107508574422
+      ],
+      "a_faster": 0.189,
+      "b_faster": 0.17
+    },
+    "llvm-mca(cascadelake) vs static": {
+      "geomean_ratio": 0.9995166107786747,
+      "ci95": [
+        0.9983495080385901,
+        1.0006384965288955
+      ],
+      "a_faster": 0.012,
+      "b_faster": 0.017
+    },
+    "llvm-mca(cascadelake) vs lstm": {
+      "geomean_ratio": 0.9963717648869543,
+      "ci95": [
+        0.9911957827303323,
+        1.00169030987063
+      ],
+      "a_faster": 0.166,
+      "b_faster": 0.188
+    }
+  },
+  "pairwise_ranking": {
+    "static": {
+      "pairs": 88282,
+      "pairwise_accuracy": 0.5046215536575972
+    },
+    "lstm": {
+      "pairs": 88282,
+      "pairwise_accuracy": 0.5071928592465055
+    },
+    "llvm-mca(cascadelake)": {
+      "pairs": 88282,
+      "pairwise_accuracy": 0.5013252984753404
+    }
+  },
+  "by_seeded_rules": {
+    "natural": {
+      "n": 1000,
+      "static": 1.000148651976298,
+      "lstm": 1.003305418847983,
+      "llvm-mca(cascadelake)": 0.9996651908982098,
+      "best": 1.0504222132824965
+    }
+  }
+}

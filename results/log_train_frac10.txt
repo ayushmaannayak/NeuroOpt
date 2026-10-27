@@ -1,0 +1,14 @@
+loaded in 10s: train=25179, val=31228, test=31153, vocab=321
+epoch  1 loss 0.6443  val MAPE 37.75%  spearman 0.8527  (12s)
+epoch  2 loss 0.3856  val MAPE 30.11%  spearman 0.8908  (12s)
+epoch  3 loss 0.3475  val MAPE 25.71%  spearman 0.9041  (12s)
+epoch  4 loss 0.2770  val MAPE 21.61%  spearman 0.9133  (13s)
+epoch  5 loss 0.2518  val MAPE 18.73%  spearman 0.9178  (12s)
+epoch  6 loss 0.2325  val MAPE 18.09%  spearman 0.9206  (13s)
+epoch  7 loss 0.2172  val MAPE 17.37%  spearman 0.9226  (13s)
+epoch  8 loss 0.2060  val MAPE 16.57%  spearman 0.9234  (12s)
+epoch  9 loss 0.1989  val MAPE 16.33%  spearman 0.9241  (12s)
+epoch 10 loss 0.1947  val MAPE 16.29%  spearman 0.9242  (13s)
+epoch 11 loss 0.1921  val MAPE 15.97%  spearman 0.9243  (12s)
+epoch 12 loss 0.1913  val MAPE 15.96%  spearman 0.9243  (12s)
+test: {"n": 31153, "mape": 16.67205547459922, "mae": 0.8429104632541379, "spearman": 0.9005898374889242, "kendall": 0.7886830998410896} -> /home/user/neuroopt/models/lstm_frac10.pt

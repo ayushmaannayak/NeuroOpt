@@ -1,0 +1,187 @@
+{
+  "n_blocks": 1000,
+  "n_candidates": 9434,
+  "timing_reproducibility": {
+    "spearman_pass1_vs_pass2": 0.32370313040044213,
+    "sd_of_pass_difference_pct": 11.832886869752025,
+    "replication_rate_of_pass1_gt2pct_effects": 0.4614003590664273,
+    "median_cv_pass2": 0.023308833398187928
+  },
+  "policies": {
+    "keep original": {
+      "geomean_speedup_pass2": 1.0,
+      "ci95": [
+        1.0,
+        1.0
+      ],
+      "geomean_speedup_pass1": 1.0,
+      "changed": 0,
+      "wins": 0,
+      "losses": 0,
+      "worst": 1.0
+    },
+    "static tau=0": {
+      "geomean_speedup_pass2": 1.0000765392140023,
+      "ci95": [
+        1.0,
+        1.0002091716449995
+      ],
+      "geomean_speedup_pass1": 1.000148651976298,
+      "changed": 3,
+      "wins": 2,
+      "losses": 0,
+      "worst": 1.0
+    },
+    "static tau=0.02": {
+      "geomean_speedup_pass2": 1.0000765392140023,
+      "ci95": [
+        1.0,
+        1.0002091716449995
+      ],
+      "geomean_speedup_pass1": 1.000148651976298,
+      "changed": 3,
+      "wins": 2,
+      "losses": 0,
+      "worst": 1.0
+    },
+    "static tau=0.05": {
+      "geomean_speedup_pass2": 1.0000765392140023,
+      "ci95": [
+        1.0,
+        1.0002091716449995
+      ],
+      "geomean_speedup_pass1": 1.000148651976298,
+      "changed": 3,
+      "wins": 2,
+      "losses": 0,
+      "worst": 1.0
+    },
+    "lstm tau=0": {
+      "geomean_speedup_pass2": 0.9985788090360901,
+      "ci95": [
+        0.9936998265004233,
+        1.0033889564321603
+      ],
+      "geomean_speedup_pass1": 1.003305418847983,
+      "changed": 700,
+      "wins": 154,
+      "losses": 140,
+      "worst": 0.6
+    },
+    "lstm tau=0.02": {
+      "geomean_speedup_pass2": 0.9989529212098194,
+      "ci95": [
+        0.9947927948575099,
+        1.0031037798980604
+      ],
+      "geomean_speedup_pass1": 1.0023294352989365,
+      "changed": 492,
+      "wins": 116,
+      "losses": 101,
+      "worst": 0.6059907834101382
+    },
+    "lstm tau=0.05": {
+      "geomean_speedup_pass2": 0.9972179299008287,
+      "ci95": [
+        0.9937313457888269,
+        1.0006168588618733
+      ],
+      "geomean_speedup_pass1": 0.9992736919094051,
+      "changed": 284,
+      "wins": 63,
+      "losses": 65,
+      "worst": 0.6059907834101382
+    },
+    "llvm-mca(cascadelake) tau=0": {
+      "geomean_speedup_pass2": 0.9998360418747221,
+      "ci95": [
+        0.9985529164169044,
+        1.000844787946527
+      ],
+      "geomean_speedup_pass1": 0.9996651908982098,
+      "changed": 47,
+      "wins": 10,
+      "losses": 11,
+      "worst": 0.6259541984732824
+    },
+    "llvm-mca(cascadelake) tau=0.02": {
+      "geomean_speedup_pass2": 1.0000522888099275,
+      "ci95": [
+        1.0,
+        1.0001568746322842
+      ],
+      "geomean_speedup_pass1": 1.0000769000758167,
+      "changed": 1,
+      "wins": 1,
+      "losses": 0,
+      "worst": 1.0
+    },
+    "llvm-mca(cascadelake) tau=0.05": {
+      "geomean_speedup_pass2": 1.0000522888099275,
+      "ci95": [
+        1.0,
+        1.0001568746322842
+      ],
+      "geomean_speedup_pass1": 1.0000769000758167,
+      "changed": 1,
+      "wins": 1,
+      "losses": 0,
+      "worst": 1.0
+    },
+    "oracle, selected on pass 1 (replicated, unbiased)": {
+      "geomean_speedup_pass2": 1.0095933843910634,
+      "ci95": [
+        1.0051330436001746,
+        1.014022092327631
+      ],
+      "geomean_speedup_pass1": 1.0504222132824965,
+      "changed": 608,
+      "wins": 179,
+      "losses": 96,
+      "worst": 0.610917537746806
+    },
+    "random legal candidate (expected)": {
+      "geomean_speedup_pass2": 0.996978906878952,
+      "ci95": [
+        0.993773531598004,
+        1.0003793437930812
+      ]
+    },
+    "oracle, selected AND scored on pass 2 (biased: winner's curse)": {
+      "geomean_speedup_pass2": 1.037014316451833
+    }
+  },
+  "paired": {
+    "lstm(tau=0) vs static(tau=0)": {
+      "ratio": 0.9985023844484049,
+      "ci95": [
+        0.9936474447010085,
+        1.0033384081448053
+      ]
+    },
+    "lstm(tau=0) vs llvm-mca(cascadelake)(tau=0)": {
+      "ratio": 0.9987425609940258,
+      "ci95": [
+        0.9938499942884002,
+        1.0036265519491698
+      ]
+    }
+  },
+  "pairwise_on_replicated_pairs": {
+    "static": {
+      "replicated_pairs": 34624,
+      "accuracy_excluding_ties": 1.0,
+      "tie_fraction": 0.9764614140480592
+    },
+    "lstm": {
+      "replicated_pairs": 34624,
+      "accuracy_excluding_ties": 0.529777033271719,
+      "tie_fraction": 0.0
+    },
+    "llvm-mca(cascadelake)": {
+      "replicated_pairs": 34624,
+      "accuracy_excluding_ties": 0.540084388185654,
+      "tie_fraction": 0.8494108133086876
+    }
+  }
+}

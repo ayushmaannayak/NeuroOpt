@@ -1,0 +1,33 @@
+{
+  "total": 314876,
+  "dropped: more than 64 instructions": 544,
+  "dropped: label outside (0, 100] cycles": 159,
+  "kept": 314173,
+  "token groups": 222445,
+  "blocks sharing a token group with another block": 113585,
+  "split (random group)": {
+    "train": 251792,
+    "val": 31228,
+    "test": 31153
+  },
+  "split (held-out families: sqlite,redis,openssl)": {
+    "train": 236324,
+    "val": 25544,
+    "excluded": 41239,
+    "unknown": 2013,
+    "test": 9053
+  },
+  "timeable (register-only)": 53232,
+  "family counts": {
+    "openblas": 16901,
+    "clang": 204086,
+    "tensorflow": 68745,
+    "ffmpeg": 16334,
+    "sqlite": 8472,
+    "redis": 8885,
+    "embree": 11541,
+    "eigen": 4310,
+    "openssl": 6064,
+    "gzip": 2199
+  }
+}

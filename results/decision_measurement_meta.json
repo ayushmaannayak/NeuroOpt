@@ -1,0 +1,7 @@
+{
+  "ticks_per_cycle": 0.823,
+  "trials": 7,
+  "rounds": 5,
+  "cpu": 3,
+  "cpu_model": "Intel(R) Xeon(R) Processor @ 2.80GHz"
+}

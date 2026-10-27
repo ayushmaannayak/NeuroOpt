@@ -1,0 +1,180 @@
+{
+  "config": {
+    "blocks": 3000,
+    "trials": 32,
+    "seed": 0
+  },
+  "guards_on": {
+    "blocks": 3000,
+    "refusals": 1864,
+    "single-step rewrites checked": 1858,
+    "multi-step candidates checked": 742,
+    "ILLEGAL (single-step)": 0,
+    "ILLEGAL (multi-step)": 0
+  },
+  "guards_on_by_rule": {
+    "R2": 528,
+    "R3": 707,
+    "R1": 623
+  },
+  "guards_off": {
+    "rewrites checked": 3722,
+    "of which a guard would refuse": 1864,
+    "guard-refused but harness saw no difference": 192,
+    "caught by harness": 1672,
+    "caught, among guard-refused": 1672
+  },
+  "guards_off_caught_by_rule": {
+    "R2": 531,
+    "R1": 696,
+    "R3": 445
+  },
+  "examples": [
+    {
+      "mode": "guards off",
+      "block": [
+        "cmove r14, rax",
+        "dec r10d",
+        "imul r14, r14, 0x10",
+        "mov rax, rax"
+      ],
+      "rewrite": "R2 @2: imul r14, r14, 0x10  ->  shl r14, 4",
+      "detail": "flags differ: CF"
+    },
+    {
+      "mode": "guards off",
+      "block": [
+        "sete cl",
+        "and r9, r15",
+        "mov edi, 0"
+      ],
+      "rewrite": "R1 @2: mov edi, 0  ->  xor edi, edi",
+      "detail": "flags differ: ZF"
+    },
+    {
+      "mode": "guards off",
+      "block": [
+        "imul edi, edi, 8",
+        "cmovl r10, rbx",
+        "inc r8d",
+        "mov r9, 0",
+        "xor rcx, r11",
+        "and r14, r10",
+        "dec rax",
+        "dec r9"
+      ],
+      "rewrite": "R2 @0: imul edi, edi, 8  ->  shl edi, 3",
+      "detail": "r10: 0xffff != 0x87225182f83106c8"
+    },
+    {
+      "mode": "guards off",
+      "block": [
+        "adc r15d, edi",
+        "imul r13d, r13d, 0x10000000",
+        "bswap rbp",
+        "mov r8d, 0",
+        "mov r12d, r12d",
+        "not r15"
+      ],
+      "rewrite": "R2 @1: imul r13d, r13d, 0x10000000  ->  shl r13d, 0x1c",
+      "detail": "flags differ: OF"
+    },
+    {
+      "mode": "guards off",
+      "block": [
+        "adc r15d, edi",
+        "imul r13d, r13d, 0x10000000",
+        "bswap rbp",
+        "mov r8d, 0",
+        "mov r12d, r12d",
+        "not r15"
+      ],
+      "rewrite": "R1 @3: mov r8d, 0  ->  xor r8d, r8d",
+      "detail": "flags differ: CF/OF"
+    },
+    {
+      "mode": "guards off",
+      "block": [
+        "adc r15d, edi",
+        "imul r13d, r13d, 0x10000000",
+        "bswap rbp",
+        "mov r8d, 0",
+        "mov r12d, r12d",
+        "not r15"
+      ],
+      "rewrite": "R3 @4: mov r12d, r12d  ->  (delete)",
+      "detail": "r12: 0xffffffff != 0x7fffffffffffffff"
+    },
+    {
+      "mode": "guards off",
+      "block": [
+        "cmovns eax, r13d",
+        "mov ebx, edi",
+        "mov r14d, 0",
+        "rol ebx, 1",
+        "imul r8, r8, 0x800"
+      ],
+      "rewrite": "R2 @4: imul r8, r8, 0x800  ->  shl r8, 0xb",
+      "detail": "flags differ: CF/OF"
+    },
+    {
+      "mode": "guards off",
+      "block": [
+        "shl rbp, cl",
+        "add rcx, r13",
+        "adc ecx, r13d",
+        "imul r11, r11, 0x8000"
+      ],
+      "rewrite": "R2 @3: imul r11, r11, 0x8000  ->  shl r11, 0xf",
+      "detail": "flags differ: CF/OF"
+    },
+    {
+      "mode": "guards off",
+      "block": [
+        "imul ecx, ecx, 0x1000",
+        "mov r8, rbp",
+        "mov rdx, 0",
+        "mov r12, r12",
+        "mov r11d, 0"
+      ],
+      "rewrite": "R2 @0: imul ecx, ecx, 0x1000  ->  shl ecx, 0xc",
+      "detail": "flags differ: CF"
+    },
+    {
+      "mode": "guards off",
+      "block": [
+        "imul ecx, ecx, 0x1000",
+        "mov r8, rbp",
+        "mov rdx, 0",
+        "mov r12, r12",
+        "mov r11d, 0"
+      ],
+      "rewrite": "R1 @2: mov rdx, 0  ->  xor rdx, rdx",
+      "detail": "flags differ: CF/SF/OF"
+    },
+    {
+      "mode": "guards off",
+      "block": [
+        "imul ecx, ecx, 0x1000",
+        "mov r8, rbp",
+        "mov rdx, 0",
+        "mov r12, r12",
+        "mov r11d, 0"
+      ],
+      "rewrite": "R1 @4: mov r11d, 0  ->  xor r11d, r11d",
+      "detail": "flags differ: CF/SF/OF"
+    },
+    {
+      "mode": "guards off",
+      "block": [
+        "adc rsi, rax",
+        "imul r11d, r11d, 0x80",
+        "dec ebx",
+        "mov rdx, 0"
+      ],
+      "rewrite": "R2 @1: imul r11d, r11d, 0x80  ->  shl r11d, 7",
+      "detail": "flags differ: CF"
+    }
+  ],
+  "seconds": 81.23296761512756
+}

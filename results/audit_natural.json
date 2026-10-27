@@ -1,0 +1,69 @@
+{
+  "blocks": 5000,
+  "guards on": {
+    "candidates": 4382,
+    "illegal": 0,
+    "emulator_could_not_run": 2719,
+    "by_rule": {
+      "R1": {
+        "n": 3,
+        "illegal": 0
+      },
+      "X1": {
+        "n": 192,
+        "illegal": 0
+      },
+      "X2": {
+        "n": 657,
+        "illegal": 0
+      },
+      "X3": {
+        "n": 12,
+        "illegal": 0
+      },
+      "X4": {
+        "n": 80,
+        "illegal": 0
+      },
+      "X6": {
+        "n": 3438,
+        "illegal": 0
+      }
+    }
+  },
+  "guards off": {
+    "candidates": 7579,
+    "illegal": 1605,
+    "emulator_could_not_run": 3389,
+    "by_rule": {
+      "R1": {
+        "n": 10,
+        "illegal": 3
+      },
+      "R3": {
+        "n": 24,
+        "illegal": 2
+      },
+      "X1": {
+        "n": 249,
+        "illegal": 20
+      },
+      "X2": {
+        "n": 928,
+        "illegal": 165
+      },
+      "X3": {
+        "n": 19,
+        "illegal": 7
+      },
+      "X4": {
+        "n": 87,
+        "illegal": 6
+      },
+      "X6": {
+        "n": 6262,
+        "illegal": 1402
+      }
+    }
+  }
+}
