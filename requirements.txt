@@ -6,3 +6,4 @@ scipy
 matplotlib
 torch>=2.2
 pytest
+flask>=3.0

@@ -50,6 +50,29 @@ Run: `bash scripts/run_natural.sh` (use a quiet machine).
 
 ---
 
+## Web app
+A browser front end for the same pipeline (it imports the project's own modules, so it shows exactly what the CLI does).
+
+```bash
+pip install -r requirements.txt
+python -m webapp                       # open http://127.0.0.1:8000
+python -m webapp --port 9000           # another port
+python -m webapp --enable-measure      # also allow "Time on this CPU" (see the warning below)
+```
+Paste Intel-syntax assembly (or hex bytes), pick an oracle (static table, the trained LSTM, llvm-mca if installed),
+optionally set the margin τ, and the page shows: decode with per-instruction **flag liveness**, every **legal rewrite**
+with its oracle score, gain and an **emulator check**, every rewrite the guards **refused and why**, the greedy
+selection trace, the re-encoded bytes with an emulator verdict, and the same block scored by every available oracle.
+Six examples are built in, including the three legality traps. The cost shown by the static oracle is a score, not a
+speedup (the page says so).
+
+* Safety: the server binds to `127.0.0.1`; hardware timing is **off** unless you pass `--enable-measure`, because it
+  executes the submitted instructions natively on your machine, and it refuses to enable it on a non-local address.
+  Do not expose this app to the internet. It uses Flask's development server, which is fine for a demo, not for production.
+* Needs the same x86-64 Linux environment as the rest of the project (Keystone, Capstone, Unicorn); on Windows use WSL.
+* Tests: `python -m pytest` (18 web tests included). A headless page test is in `tests/ui_check.js`
+  (`npm install jsdom`, start the server on port 8765, then `node tests/ui_check.js`).
+
 ## Pipeline
 
 ```
@@ -75,7 +98,7 @@ bytes ─► M1 Decode ─┤                                         ├─► 
 
 ```bash
 pip install -r requirements.txt             # also needs gcc and llvm-mca (LLVM 18) on PATH
-python -m pytest                             # 25 tests (two time real hardware)
+python -m pytest                             # 43 tests (two time real hardware)
 
 # optimize one block (the slide-23 worked example)
 python -m neuroopt optimize --asm "mov rax, 0; imul rbx, rbx, 8; mov rcx, rcx; add rax, rbx" --measure

@@ -36,6 +36,8 @@ with guards on; 1,672 of 1,864 guard-refused rewrites caught with guards off), s
 * Tests: 19 -> 25 (calibration self-check; extended pool equivalent in the emulator; guards refuse when flags are live;
   swap respects implicit operands; verifier exposes unguarded extended rewrites; verifier has no false illegals).
 
+* `webapp/` - a Flask web app over the same pipeline (see README, "Web app"); 18 API tests and a headless-DOM page test.
+
 ## 3. Findings
 
 **Guard audit on natural code** (5,000 random BHive blocks, any instruction mix, single-step rewrites):

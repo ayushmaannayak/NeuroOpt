@@ -41,7 +41,8 @@ class Selection:
         return bool(self.steps)
 
 
-def select_greedy(block: list[Instr], oracle, tau: float = 0.0, relative: bool = False) -> Selection:
+def select_greedy(block: list[Instr], oracle, tau: float = 0.0, relative: bool = False,
+                  extended: bool = False) -> Selection:
     """Greedy selector: repeatedly take the best single legal rewrite while its
     predicted gain clears τ. Simple and fast, not guaranteed optimal."""
     current = list(block)
@@ -51,7 +52,7 @@ def select_greedy(block: list[Instr], oracle, tau: float = 0.0, relative: bool =
     refusals: list[Refusal] = []
     seen_refusals = set()
     while True:
-        rewrites, refused = find_rewrites(current)
+        rewrites, refused = find_rewrites(current, extended=extended)
         for r in refused:
             if (r.rule, r.before, r.reason) not in seen_refusals:
                 seen_refusals.add((r.rule, r.before, r.reason))

@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NeuroOpt: guarded peephole optimizer</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#16202b;--mute:#5d6b7a;--line:#dfe4ea;--acc:#b8501c;--ok:#1d7a5b;--bad:#b3261e;--warn:#a06a00;--chip:#eef1f5;--code:#f1f3f6}
+@media (prefers-color-scheme:dark){:root{--bg:#10151b;--card:#18202a;--ink:#e6ebf0;--mute:#9aa7b5;--line:#2a3441;--acc:#f08a4b;--ok:#4cc29a;--bad:#ff7b72;--warn:#e3b341;--chip:#222c38;--code:#1d2733}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{padding:20px 24px 4px;max-width:1100px;margin:0 auto}
+h1{margin:0;font-size:22px}h1 span{color:var(--acc)}
+.sub{color:var(--mute);margin:4px 0 0}
+main{max-width:1100px;margin:0 auto;padding:12px 24px 48px;display:grid;gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.card h2{margin:0 0 10px;font-size:15px;letter-spacing:.02em}
+.card h2 small{color:var(--mute);font-weight:400;margin-left:6px}
+textarea,input,select,button{font:inherit;color:inherit}
+textarea{width:100%;min-height:120px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;background:var(--code);border:1px solid var(--line);border-radius:8px;padding:10px;resize:vertical}
+.row{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;margin-top:10px}
+label{display:grid;gap:3px;font-size:13px;color:var(--mute)}
+input[type=number],select{background:var(--code);border:1px solid var(--line);border-radius:6px;padding:6px 8px}
+label.chk{display:flex;gap:6px;align-items:center;color:var(--ink)}
+button{background:var(--acc);color:#fff;border:0;border-radius:8px;padding:9px 18px;cursor:pointer;font-weight:600}
+button.ghost{background:var(--chip);color:var(--ink);font-weight:500}
+button:disabled{opacity:.5;cursor:default}
+.note{color:var(--mute);font-size:13px;margin-top:6px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--mute);font-weight:500;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+code,.mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px}
+.pill{display:inline-block;padding:1px 7px;margin-right:3px;border-radius:999px;font-size:11px;background:var(--chip);color:var(--mute);font-family:ui-monospace,monospace}
+.pill.on{background:var(--acc);color:#fff}
+.badge{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:600}
+.badge.ok{background:color-mix(in srgb,var(--ok) 18%,transparent);color:var(--ok)}
+.badge.bad{background:color-mix(in srgb,var(--bad) 18%,transparent);color:var(--bad)}
+.badge.warn{background:color-mix(in srgb,var(--warn) 18%,transparent);color:var(--warn)}
+.badge.mute{background:var(--chip);color:var(--mute)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:760px){.grid2{grid-template-columns:1fr}}
+pre{margin:0;background:var(--code);border-radius:8px;padding:10px;overflow:auto;font-size:13px}
+.err{border-color:var(--bad);color:var(--bad)}
+.refuse li{margin:3px 0}
+.bar{height:10px;background:var(--chip);border-radius:6px;overflow:hidden;margin:4px 0}
+.bar>i{display:block;height:100%;background:var(--acc)}
+.big{font-size:22px;font-weight:700}
+.hidden{display:none}
+.callout{background:color-mix(in srgb,var(--warn) 14%,transparent);border-left:3px solid var(--warn);padding:8px 12px;border-radius:6px;font-size:13px;margin-top:10px}
+</style>
+</head>
+<body>
+<header>
+  <h1><span>Neuro</span>Opt <small style="font-weight:400;color:var(--mute)">guarded peephole optimizer with a replaceable cost oracle</small></h1>
+  <p class="sub">Paste an x86-64 basic block. Legality is decided by guards (backward flag liveness); the oracle only ranks the legal candidates.</p>
+</header>
+<main>
+  <section class="card">
+    <h2>1. Input <small>Intel syntax, one instruction per line or separated by <code>;</code></small></h2>
+    <textarea id="asm" spellcheck="false" placeholder="mov rax, 0&#10;imul rbx, rbx, 8&#10;mov rcx, rcx&#10;add rax, rbx"></textarea>
+    <div class="row">
+      <label>Example
+        <select id="example"><option value="">Choose an example…</option></select>
+      </label>
+      <label>Cost oracle
+        <select id="oracle"></select>
+      </label>
+      <label>Margin τ
+        <input id="tau" type="number" min="0" step="0.05" value="0" style="width:90px">
+      </label>
+      <label class="chk"><input id="relative" type="checkbox"> τ is a fraction of the original cost</label>
+      <label class="chk"><input id="extended" type="checkbox"> Extended rules (X1–X6, optional)</label>
+    </div>
+    <div class="row">
+      <label style="flex:1;min-width:260px">…or hex bytes (overrides the assembly box)
+        <input id="hex" type="text" spellcheck="false" placeholder="48c7c000000000486bdb084889c94801d8" style="width:100%;background:var(--code);border:1px solid var(--line);border-radius:6px;padding:6px 8px;font-family:ui-monospace,monospace">
+      </label>
+      <button id="run">Optimize</button>
+      <button id="measure" class="ghost hidden">Time on this CPU</button>
+    </div>
+    <div id="exnote" class="note"></div>
+  </section>
+
+  <section id="error" class="card err hidden"></section>
+
+  <div id="results" class="hidden" style="display:grid;gap:16px">
+    <section class="card">
+      <h2>2. Decode and flag liveness <small>flags that may still be read after each instruction (all six are live at block exit)</small></h2>
+      <table id="decode"></table>
+    </section>
+    <section class="card">
+      <h2>3. Legal rewrites <small id="oraclename"></small></h2>
+      <table id="legal"></table>
+      <div id="nolegal" class="note hidden">No legal rewrite for this block.</div>
+      <h2 style="margin-top:14px">Refused by the guards</h2>
+      <ul id="refused" class="refuse" style="margin:0;padding-left:18px"></ul>
+      <div id="norefused" class="note hidden">Nothing was refused.</div>
+    </section>
+    <section class="card">
+      <h2>4. Selection <small>greedy, accepts a rewrite only if its gain clears τ</small></h2>
+      <div id="steps"></div>
+      <div class="row" style="align-items:center">
+        <div><div class="note">predicted cost</div><div class="big"><span id="cb"></span> → <span id="ca"></span></div></div>
+        <div style="flex:1;min-width:200px"><div class="bar"><i id="barfill"></i></div><div id="redtxt" class="note"></div></div>
+      </div>
+      <div class="callout" id="proxynote"></div>
+    </section>
+    <section class="card">
+      <h2>5. Emit and verify</h2>
+      <div class="grid2">
+        <div><div class="note">original · <span id="ob"></span> bytes</div><table id="origt"></table></div>
+        <div><div class="note">optimized · <span id="nb"></span> bytes</div><table id="optt"></table></div>
+      </div>
+      <div style="margin-top:10px" id="verdict"></div>
+      <div id="timing" class="note" style="margin-top:8px"></div>
+    </section>
+    <section class="card">
+      <h2>6. The same block under every available oracle <small>scores are not comparable across rows</small></h2>
+      <table id="compare"></table>
+    </section>
+  </div>
+</main>
+<script>
+const $ = s => document.querySelector(s);
+const FLAGS = ["CF","PF","AF","ZF","SF","OF"];
+let CONFIG = null;
+
+function el(tag, attrs, ...kids){
+  const e = document.createElement(tag);
+  for (const [k,v] of Object.entries(attrs||{})){
+    if (k === "class") e.className = v; else if (k === "text") e.textContent = v; else e.setAttribute(k, v);
+  }
+  for (const c of kids){ if (c == null) continue; e.append(c.nodeType ? c : document.createTextNode(String(c))); }
+  return e;
+}
+const f2 = x => (Math.abs(x) >= 100 ? x.toFixed(1) : x.toFixed(2));
+function clear(node){ while (node.firstChild) node.removeChild(node.firstChild); }
+function head(table, cols){ clear(table); const tr = el("tr"); cols.forEach(c => tr.append(el("th", {text:c}))); table.append(el("thead", {}, tr)); const tb = el("tbody"); table.append(tb); return tb; }
+function badge(kind, text){ return el("span", {class:"badge "+kind, text}); }
+
+async function api(path, body){
+  const r = await fetch(path, {method: body ? "POST" : "GET", headers: {"Content-Type":"application/json"}, body: body ? JSON.stringify(body) : undefined});
+  let data = null; try { data = await r.json(); } catch(e) {}
+  if (!r.ok) throw new Error((data && data.error) || ("HTTP " + r.status));
+  return data;
+}
+function payload(){
+  return {asm: $("#asm").value, hex: $("#hex").value, oracle: $("#oracle").value, tau: $("#tau").value || "0",
+          relative: $("#relative").checked, extended: $("#extended").checked};
+}
+function showError(msg){ const e = $("#error"); e.textContent = msg; e.classList.remove("hidden"); $("#results").classList.add("hidden"); }
+
+function verdictNode(v){
+  if (!v) return badge("mute", "Emulator check skipped: nothing was rewritten");
+  if (v.equivalent === true) return el("span", {}, badge("ok", "EQUIVALENT"), " original and rewritten bytes agree on " + v.trials + " random states (registers, memory, defined flags). Tested, not formally proven.");
+  if (v.equivalent === false) return el("span", {}, badge("bad", "MISMATCH"), " " + v.detail);
+  return el("span", {}, badge("warn", "NOT CHECKED"), " " + v.detail);
+}
+function smallVerdict(v){
+  if (v.equivalent === true) return badge("ok", "✓ equivalent");
+  if (v.equivalent === false) return badge("bad", "✗ " + v.detail);
+  return badge("warn", "not checked");
+}
+
+function render(d){
+  $("#error").classList.add("hidden"); $("#results").classList.remove("hidden");
+  $("#oraclename").textContent = "scored by " + d.oracle.name + (d.extended ? " · extended rules on" : "");
+
+  let tb = head($("#decode"), ["#", "bytes", "instruction", "live after"]);
+  d.original.forEach(r => {
+    const flags = el("td");
+    FLAGS.forEach(f => flags.append(el("span", {class:"pill" + (r.live_after.includes(f) ? " on" : ""), text:f})));
+    tb.append(el("tr", {}, el("td", {text:r.index}), el("td", {class:"mono", text:r.hex}), el("td", {class:"mono", text:r.text}), flags));
+  });
+
+  const legal = $("#legal");
+  if (d.legal.length){
+    tb = head(legal, ["rule", "rewrite", "oracle score after", "gain", "clears τ", "emulator"]);
+    d.legal.forEach(c => {
+      tb.append(el("tr", {},
+        el("td", {text:c.rule + " @" + c.index}),
+        el("td", {class:"mono", text:c.before + "  →  " + c.after}),
+        el("td", {text:f2(c.score)}),
+        el("td", {text:(c.gain >= 0 ? "+" : "") + f2(c.gain) + " (" + c.gain_pct.toFixed(1) + "%)"}),
+        el("td", {}, c.clears_tau ? badge("ok", "yes") : badge("mute", "no")),
+        el("td", {}, smallVerdict(c.emulator))));
+    });
+    $("#nolegal").classList.add("hidden");
+  } else { clear(legal); $("#nolegal").classList.remove("hidden"); }
+
+  const ref = $("#refused"); clear(ref);
+  d.refused.forEach(r => ref.append(el("li", {}, el("b", {text:r.rule + " @" + r.index + ": "}), el("span", {class:"mono", text:r.before}), "  ", el("span", {text:"(" + r.reason + ")"}))));
+  $("#norefused").classList.toggle("hidden", d.refused.length > 0);
+
+  const steps = $("#steps"); clear(steps);
+  if (d.steps.length){
+    const ol = el("ol", {style:"margin:0 0 8px;padding-left:20px"});
+    d.steps.forEach(s => ol.append(el("li", {class:"mono", text:s})));
+    steps.append(ol);
+  } else {
+    steps.append(el("div", {class:"note", text: d.legal.length ? "No candidate cleared the margin τ: the original block is kept." : "No legal rewrite: the original block is kept."}));
+  }
+  $("#cb").textContent = f2(d.cost_before); $("#ca").textContent = f2(d.cost_after);
+  const keep = d.cost_before ? Math.max(0, Math.min(100, 100 * d.cost_after / d.cost_before)) : 100;
+  $("#barfill").style.width = keep + "%";
+  $("#redtxt").textContent = d.changed ? ("−" + d.reduction_pct.toFixed(1) + "% on this oracle's scale") : "unchanged";
+  $("#proxynote").textContent = d.oracle.id === "static"
+    ? "This is a score from a fixed per-opcode table, not a hardware speedup. It shows the selection pipeline works."
+    : "This is the oracle's predicted cost, not a measured speedup. Use “Time on this CPU” (if enabled) for a measurement.";
+
+  $("#ob").textContent = d.original_bytes; $("#nb").textContent = d.optimized_bytes;
+  const fill = (t, rows) => { const b = head(t, ["bytes", "instruction"]); rows.forEach(r => b.append(el("tr", {}, el("td", {class:"mono", text:r.hex}), el("td", {class:"mono", text:r.text}))));
+    if (!rows.length) b.append(el("tr", {}, el("td", {colspan:2, class:"note", text:"(empty)"}))); };
+  fill($("#origt"), d.original); fill($("#optt"), d.optimized);
+  const v = $("#verdict"); clear(v); v.append(verdictNode(d.verification));
+  $("#timing").textContent = "";
+
+  tb = head($("#compare"), ["oracle", "original", "optimized"]);
+  Object.values(d.compare).forEach(c => tb.append(el("tr", {}, el("td", {text:c.label}), el("td", {text:f2(c.original)}), el("td", {text:f2(c.optimized)}))));
+}
+
+async function run(){
+  $("#run").disabled = true; $("#run").textContent = "Working…";
+  try { render(await api("/api/optimize", payload())); }
+  catch(e){ showError(e.message); }
+  finally { $("#run").disabled = false; $("#run").textContent = "Optimize"; }
+}
+async function measure(){
+  const t = $("#timing"); t.textContent = "Timing on this CPU…";
+  try {
+    const m = await api("/api/measure", payload());
+    t.textContent = m.timed
+      ? "Hardware timing on this CPU: " + f2(m.before) + " → " + f2(m.after) + " cycles/iteration (×" + (m.speedup ? m.speedup.toFixed(2) : "?") + ")" + (m.calibration_ok === false ? " · timer calibration looks unreliable on this machine" : "")
+      : "Not timed: " + m.reason;
+  } catch(e){ t.textContent = e.message; }
+}
+
+(async function init(){
+  try {
+    CONFIG = await api("/api/config");
+  } catch(e){ showError("Could not reach the server: " + e.message); return; }
+  const ex = $("#example");
+  CONFIG.examples.forEach((e, i) => ex.append(el("option", {value:i, text:e.title})));
+  ex.addEventListener("change", () => {
+    const e = CONFIG.examples[ex.value]; if (!e) { $("#exnote").textContent = ""; return; }
+    $("#asm").value = e.asm.split("; ").join("\n"); $("#hex").value = "";
+    $("#exnote").textContent = e.note; $("#extended").checked = /Extended/.test(e.title);
+  });
+  CONFIG.oracles.forEach(o => $("#oracle").append(el("option", {value:o.id, text:o.label})));
+  if (CONFIG.measure) $("#measure").classList.remove("hidden");
+  $("#run").addEventListener("click", run);
+  $("#measure").addEventListener("click", measure);
+  $("#asm").value = CONFIG.examples[0].asm.split("; ").join("\n"); $("#exnote").textContent = CONFIG.examples[0].note;
+  ex.value = "0";
+})();
+</script>
+</body>
+</html>
